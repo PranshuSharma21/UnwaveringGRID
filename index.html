@@ -151,7 +151,7 @@
         .main-container {
             width: 92%;
             max-width: 1140px;
-            min-height: calc(100vh - 140px);
+            min-height: calc(100vh - 180px);
             z-index: 1;
             display: flex;
             flex-direction: column;
@@ -161,45 +161,9 @@
             padding: 20px 0;
         }
 
-        .live-status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(52, 211, 153, 0.45);
-            padding: 8px 20px;
-            border-radius: 999px;
-            font-size: 0.84rem;
-            font-weight: 700;
-            color: #34d399;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            box-shadow: 0 0 25px rgba(52, 211, 153, 0.2);
-            animation: floatBadge 3.5s ease-in-out infinite alternate;
-        }
-
-        .live-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #34d399;
-            box-shadow: 0 0 12px #34d399;
-            animation: pulseDot 1.4s infinite;
-        }
-
-        @keyframes pulseDot {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.4); opacity: 0.4; }
-        }
-
-        @keyframes floatBadge {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-7px); }
-        }
-
         .particle-container {
             width: 100%;
-            height: 250px;
+            height: 260px;
             position: relative;
             display: flex;
             justify-content: center;
@@ -244,7 +208,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-top: -6px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             letter-spacing: 1.5px;
             animation: shimmerText 6s linear infinite;
         }
@@ -255,11 +219,11 @@
         }
 
         .hero-subtitle {
-            font-size: 1.15rem;
+            font-size: 1.18rem;
             color: #cbd5e1;
-            max-width: 720px;
-            line-height: 1.7;
-            margin-bottom: 32px;
+            max-width: 760px;
+            line-height: 1.75;
+            margin-bottom: 36px;
         }
 
         .cta-row {
@@ -267,7 +231,6 @@
             gap: 18px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 46px;
         }
 
         .cta-btn {
@@ -314,130 +277,10 @@
             color: #ffffff;
         }
 
-        .live-widgets-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1020px;
-        }
-
-        .mini-live-card {
-            background: rgba(15, 23, 42, 0.72);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            border-radius: 20px;
-            padding: 18px 22px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            text-align: left;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-
-        .mini-live-card:hover {
-            transform: translateY(-5px);
-            border-color: #38bdf8;
-        }
-
-        .wave-canvas-box {
-            width: 76px;
-            height: 52px;
-            background: rgba(2, 6, 23, 0.85);
-            border-radius: 12px;
-            border: 1px solid rgba(192, 132, 252, 0.35);
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .liquid-gauge {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #020617;
-            border: 2px solid #38bdf8;
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
-        }
-
-        .liquid-wave {
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            top: 40%;
-            left: -50%;
-            background: rgba(56, 189, 248, 0.45);
-            border-radius: 40%;
-            animation: spinWave 4s linear infinite;
-        }
-
-        .liquid-wave::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(56, 189, 248, 0.3);
-            border-radius: 45%;
-            animation: spinWave 6s linear infinite reverse;
-        }
-
-        @keyframes spinWave {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .rotor-box {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: rgba(52, 211, 153, 0.1);
-            border: 2px solid rgba(52, 211, 153, 0.45);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .spinning-fan {
-            animation: spinFan 2.4s linear infinite;
-            transform-origin: center;
-        }
-
-        @keyframes spinFan {
-            100% { transform: rotate(360deg); }
-        }
-
-        .widget-text-col {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .widget-label {
-            font-size: 0.78rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-        }
-
-        .widget-val {
-            font-size: 1.18rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .widget-sub {
-            font-size: 0.8rem;
-            color: #34d399;
-            font-weight: 600;
-        }
-
         .about-section {
             width: 92%;
             max-width: 1100px;
-            margin-top: 90px;
+            margin-top: 60px;
             z-index: 1;
         }
 
@@ -512,14 +355,18 @@
             padding: 18px;
         }
 
+        @keyframes spinOrbit {
+            100% { transform: rotate(360deg); }
+        }
+
         .orbit-ring-cw {
             transform-origin: 200px 150px;
-            animation: spinFan 10s linear infinite;
+            animation: spinOrbit 10s linear infinite;
         }
 
         .orbit-ring-ccw {
             transform-origin: 200px 150px;
-            animation: spinFan 14s linear infinite reverse;
+            animation: spinOrbit 14s linear infinite reverse;
         }
 
         .impact-section {
@@ -751,21 +598,10 @@
 
         .console-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding-bottom: 10px;
-        }
-
-        .console-dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .console-dots span {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
         }
 
         .console-status {
@@ -1214,11 +1050,6 @@
     </div>
 
     <div class="main-container">
-        <div class="live-status-badge">
-            <span class="live-dot"></span>
-            <span>24/7 Autonomous Building Shield Active</span>
-        </div>
-
         <div class="particle-container">
             <div id="particle-text-mount" class="particle-text" aria-label="G.R.I.D">
                 <canvas id="particle-canvas" class="particle-text__canvas" aria-hidden="true"></canvas>
@@ -1228,7 +1059,8 @@
 
         <div class="hero-tagline">ONE SYSTEM. EVERY BUILDING.</div>
         <p class="hero-subtitle">
-            Gateway for Repairs, Inventory, and Dispatch. GRID watches your building's pipes, wires, and climate in real time—catching hidden leaks and electrical hazards before they turn into expensive emergencies.
+            Gateway for Repairs, Inventory and Dispatch.<br>
+            GRID watches your building's pipes, wires and moisture content in real time catching hidden leaks and electrical hazards before they turn into expensive emergencies
         </p>
 
         <div class="cta-row">
@@ -1240,46 +1072,6 @@
                 <span>Test Building Simulator</span>
             </a>
         </div>
-
-        <div class="live-widgets-bar">
-            <div class="mini-live-card">
-                <div class="wave-canvas-box">
-                    <canvas id="sineWaveCanvas" width="76" height="52"></canvas>
-                </div>
-                <div class="widget-text-col">
-                    <span class="widget-label">Live Power Waveform</span>
-                    <span class="widget-val" id="liveVoltText">230.1 V • 50 Hz</span>
-                    <span class="widget-sub">Zero Spark Anomalies</span>
-                </div>
-            </div>
-
-            <div class="mini-live-card">
-                <div class="liquid-gauge">
-                    <div class="liquid-wave"></div>
-                </div>
-                <div class="widget-text-col">
-                    <span class="widget-label">Plumbing Pressure</span>
-                    <span class="widget-val" id="liveFlowText">42.4 PSI • Sealed</span>
-                    <span class="widget-sub">0.0 L/min Night Trickle</span>
-                </div>
-            </div>
-
-            <div class="mini-live-card">
-                <div class="rotor-box">
-                    <svg class="spinning-fan" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 12c0-3 2.5-5.5 5.5-5.5S23 9 23 12H12z"/>
-                        <path d="M12 12c3 0 5.5 2.5 5.5 5.5S15 23 12 23V12z"/>
-                        <path d="M12 12c0 3-2.5 5.5-5.5 5.5S1 15 1 12h11z"/>
-                        <path d="M12 12c-3 0-5.5-2.5-5.5-5.5S9 1 12 1v11z"/>
-                    </svg>
-                </div>
-                <div class="widget-text-col">
-                    <span class="widget-label">Climate & Pump Sync</span>
-                    <span class="widget-val" id="liveTempText">24.0 °C • 45% RH</span>
-                    <span class="widget-sub">Off-Peak Tariff Mode</span>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="about-section reveal-on-scroll">
@@ -1287,10 +1079,10 @@
             <div class="about-copy">
                 <h2 class="about-title">ABOUT GRID</h2>
                 <p class="about-paragraph">
-                    Think of GRID as an <span class="highlight-blue">intelligent digital security guard for your entire building</span>. Built for apartments, homes, and busy offices, GRID keeps a non-stop eye on your pipes and electrical panels so small hiccups never become disasters.
+                    Think of GRID as an <span class="highlight-blue">intelligent digital security guard for your entire building</span>. Built for apartments, homes and busy offices, GRID keeps a non stop eye on your pipes and electrical panels so small hiccups never become disasters.
                 </p>
                 <p class="about-paragraph">
-                    By <span class="highlight-blue">listening to power lines and water pipes at the same time</span>, GRID spots hidden wall leaks, freezing pipes, and overheating wires early—automatically alerting residents and sending a ready-to-go repair ticket to local technicians.
+                    By <span class="highlight-blue">listening to power lines and water pipes at the same time</span>, GRID spots hidden wall and pipe leaks and also overheating wires early automatically alerting residents and sending a ready to go repair ticket to local technicians.
                 </p>
             </div>
 
@@ -1350,7 +1142,7 @@
                 <span class="gauge-num" data-target="80" data-suffix="%">0%</span>
             </div>
             <div class="gauge-title">Cheaper Setup</div>
-            <div class="gauge-desc">Uses snap-on microcontrollers instead of costly legacy building hardware.</div>
+            <div class="gauge-desc">Uses snap on microcontrollers instead of costly legacy building hardware.</div>
         </div>
 
         <div class="gauge-card">
@@ -1362,7 +1154,7 @@
                 <span class="gauge-num" data-target="20" data-suffix="%">0%</span>
             </div>
             <div class="gauge-title">Lower Utility Bills</div>
-            <div class="gauge-desc">Eliminates phantom water leaks and runs heavy pumps during cheaper off-peak hours.</div>
+            <div class="gauge-desc">Eliminates phantom water leaks and shifts heavy pumps to cheaper off peak hours.</div>
         </div>
 
         <div class="gauge-card">
@@ -1374,7 +1166,7 @@
                 <span class="gauge-num" data-target="60" data-suffix="%">0%</span>
             </div>
             <div class="gauge-title">Faster Fixes</div>
-            <div class="gauge-desc">Technicians receive pre-diagnosed tickets with exact part numbers before arriving.</div>
+            <div class="gauge-desc">Technicians receive pre diagnosed tickets with exact part numbers that contain fault before arriving.</div>
         </div>
 
         <div class="gauge-card">
@@ -1392,7 +1184,6 @@
 
     <div class="simulator-section reveal-on-scroll" id="interactive-xray">
         <div class="section-head">
-            <span class="section-pill">Interactive Building Twin</span>
             <h2 class="section-title">Click a Hazard to Watch GRID React</h2>
             <p class="section-sub">Trigger a simulated leak, electrical overload, or pump fault and watch the live building X-ray and AI dispatcher respond.</p>
         </div>
@@ -1403,39 +1194,45 @@
                     <rect x="45" y="25" width="410" height="270" rx="14" fill="#080d1a" stroke="#334155" stroke-width="2"/>
                     <line x1="45" y1="115" x2="455" y2="115" stroke="#1e293b" stroke-width="2"/>
                     <line x1="45" y1="205" x2="455" y2="205" stroke="#1e293b" stroke-width="2"/>
-                    <line x1="250" y1="25" x2="250" y2="295" stroke="#1e293b" stroke-width="2"/>
 
-                    <path id="svgWaterPipe" class="flow-line" d="M 75 55 L 220 55 L 220 265 L 420 265" stroke="#38bdf8" stroke-width="4"/>
-                    <path id="svgPowerWire" class="flow-line" d="M 425 60 L 285 60 L 285 250 L 95 250" stroke="#c084fc" stroke-width="3"/>
+                    <text x="60" y="48" fill="#64748b" font-size="10" font-weight="700">TOP FLOOR / ROOF</text>
+                    <text x="60" y="138" fill="#64748b" font-size="10" font-weight="700">APARTMENT WALLS</text>
+                    <text x="60" y="228" fill="#64748b" font-size="10" font-weight="700">BASEMENT UTILITY AREA</text>
+
+                    <path id="svgWaterPipe" class="flow-line" d="M 85 70 L 215 70 L 215 265 L 415 265" stroke="#38bdf8" stroke-width="4"/>
+                    <path id="svgPowerWire" class="flow-line" d="M 420 75 L 290 75 L 290 250 L 100 250" stroke="#c084fc" stroke-width="3"/>
 
                     <circle r="5" fill="#38bdf8">
-                        <animateMotion dur="3s" repeatCount="indefinite" path="M 75 55 L 220 55 L 220 265 L 420 265"/>
+                        <animateMotion dur="3s" repeatCount="indefinite" path="M 85 70 L 215 70 L 215 265 L 415 265"/>
                     </circle>
                     <circle r="4" fill="#c084fc">
-                        <animateMotion dur="2.2s" repeatCount="indefinite" path="M 425 60 L 285 60 L 285 250 L 95 250"/>
+                        <animateMotion dur="2.2s" repeatCount="indefinite" path="M 420 75 L 290 75 L 290 250 L 100 250"/>
                     </circle>
 
                     <g id="leakDropsGroup" style="display:none;">
-                        <circle class="drip-anim" cx="220" cy="160" r="4" fill="#f43f5e"/>
-                        <circle class="drip-anim" cx="226" cy="168" r="3.5" fill="#38bdf8" style="animation-delay:0.4s;"/>
-                        <ellipse cx="222" cy="198" rx="22" ry="5" fill="rgba(244, 63, 94, 0.45)"/>
+                        <circle class="drip-anim" cx="215" cy="165" r="4" fill="#f43f5e"/>
+                        <circle class="drip-anim" cx="222" cy="172" r="3.5" fill="#38bdf8" style="animation-delay:0.4s;"/>
+                        <ellipse cx="218" cy="198" rx="24" ry="5" fill="rgba(244, 63, 94, 0.45)"/>
                     </g>
 
                     <g id="sparkBoltGroup" style="display:none;">
-                        <polygon class="spark-anim" points="285,225 272,248 286,248 276,272 302,243 287,243" fill="#f59e0b"/>
+                        <polygon class="spark-anim" points="290,225 277,248 291,248 281,272 307,243 292,243" fill="#f59e0b"/>
                     </g>
 
-                    <circle class="radar-wave" id="radarLeak" cx="220" cy="155" r="10" stroke="#38bdf8" stroke-width="2" fill="none"/>
-                    <circle id="nodeLeak" cx="220" cy="155" r="7" fill="#38bdf8"/>
-                    <text x="105" y="160" fill="#e2e8f0" font-size="11" font-weight="700">2F Riser Pipe</text>
+                    <circle class="radar-wave" id="radarLeak" cx="215" cy="160" r="10" stroke="#38bdf8" stroke-width="2" fill="none"/>
+                    <circle id="nodeLeak" cx="215" cy="160" r="7" fill="#38bdf8"/>
+                    <rect x="70" y="146" width="128" height="26" rx="6" fill="rgba(15, 23, 42, 0.9)" stroke="rgba(56, 189, 248, 0.4)"/>
+                    <text x="134" y="163" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="700">Wall Water Pipe</text>
 
-                    <circle class="radar-wave" id="radarSpark" cx="285" cy="245" r="10" stroke="#c084fc" stroke-width="2" fill="none"/>
-                    <circle id="nodeSpark" cx="285" cy="245" r="7" fill="#c084fc"/>
-                    <text x="302" y="250" fill="#e2e8f0" font-size="11" font-weight="700">Main Breaker</text>
+                    <circle class="radar-wave" id="radarSpark" cx="290" cy="250" r="10" stroke="#c084fc" stroke-width="2" fill="none"/>
+                    <circle id="nodeSpark" cx="290" cy="250" r="7" fill="#c084fc"/>
+                    <rect x="308" y="236" width="128" height="26" rx="6" fill="rgba(15, 23, 42, 0.9)" stroke="rgba(192, 132, 252, 0.4)"/>
+                    <text x="372" y="253" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="700">Main Power Box</text>
 
-                    <circle class="radar-wave" id="radarPump" cx="355" cy="70" r="10" stroke="#34d399" stroke-width="2" fill="none"/>
-                    <circle id="nodePump" cx="355" cy="70" r="7" fill="#34d399"/>
-                    <text x="305" y="98" fill="#e2e8f0" font-size="11" font-weight="700">Roof Pump</text>
+                    <circle class="radar-wave" id="radarPump" cx="350" cy="70" r="10" stroke="#34d399" stroke-width="2" fill="none"/>
+                    <circle id="nodePump" cx="350" cy="70" r="7" fill="#34d399"/>
+                    <rect x="286" y="84" width="128" height="26" rx="6" fill="rgba(15, 23, 42, 0.9)" stroke="rgba(52, 211, 153, 0.4)"/>
+                    <text x="350" y="101" text-anchor="middle" fill="#e2e8f0" font-size="11" font-weight="700">Water Tank Pump</text>
                 </svg>
             </div>
 
@@ -1449,16 +1246,11 @@
 
                 <div class="ai-console">
                     <div class="console-header">
-                        <div class="console-dots">
-                            <span style="background:#f43f5e;"></span>
-                            <span style="background:#f59e0b;"></span>
-                            <span style="background:#34d399;"></span>
-                        </div>
                         <span class="console-status" id="consoleBadge">SYSTEM HEALTHY</span>
                     </div>
-                    <div class="console-title" id="consoleTitle">All Building Zones Normal</div>
+                    <div class="console-title" id="consoleTitle">All Building Areas Normal</div>
                     <div class="console-desc" id="consoleDesc">
-                        Sensors are sampling water flow, temperature, and voltage every 100ms. Consumption matches learned daily habits.
+                        Sensors are checking water flow, moisture and electricity every second. Everything matches normal daily usage.
                     </div>
                     <div class="console-typewriter">
                         <span id="typewriterText"></span><span class="cursor-blink"></span>
@@ -1483,8 +1275,8 @@
                     <rect x="10" y="14" width="44" height="36" rx="8" stroke="#38bdf8" stroke-width="2.5"/>
                     <path d="M18 32h6l4-10 8 20 4-10h6" stroke="#c084fc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <h3>Clip-On Sensors</h3>
-                <p>Snap-on clamps attach to existing pipes and wires in minutes without drilling walls or cutting power.</p>
+                <h3>Clip On Sensors</h3>
+                <p>Snap on clamp sensors attach to existing pipes and wires in minutes without drilling walls or cutting power.</p>
             </div>
 
             <div class="tilt-step-card">
@@ -1508,7 +1300,7 @@
                     <path d="M27 48a5 5 0 0 0 10 0" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
                 </svg>
                 <h3>Instant Warnings</h3>
-                <p>Highlights the exact room on the live web dashboard and texts residents right away so nobody is left guessing.</p>
+                <p>Highlights the exact area on the live web dashboard and texts residents right away so nobody is left guessing.</p>
             </div>
 
             <div class="tilt-step-card">
@@ -1517,8 +1309,8 @@
                     <rect x="14" y="10" width="36" height="44" rx="6" stroke="#c084fc" stroke-width="2.5"/>
                     <path d="M24 34l6 6 12-12" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <h3>Auto-Repair Ticket</h3>
-                <p>Writes a complete diagnostic work order, pulls the equipment manual, and finds available local technicians.</p>
+                <h3>Repair Ticket</h3>
+                <p>Writes a complete diagnostic work order, pulls the equipment manual and finds available local technicians.</p>
             </div>
         </div>
     </div>
@@ -1526,7 +1318,7 @@
     <div class="features-section reveal-on-scroll">
         <div class="features-sidebar">
             <h2>Our Features</h2>
-            <p>Everything needed to turn any apartment block or office into a self-protecting smart building.</p>
+            <p>Everything needed to turn any apartment block or office into a self protecting smart building.</p>
             <div class="features-line"></div>
         </div>
 
@@ -1535,15 +1327,15 @@
                 <div class="feat-icon">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7df9ff" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 </div>
-                <div class="feature-card-title">Real-Time Telemetry</div>
-                <div class="feature-card-desc">Sub-second sensor streams sync directly over WebSockets with automatic backup polling so zero readings are lost.</div>
+                <div class="feature-card-title">Real Time Telemetry data transport</div>
+                <div class="feature-card-desc">Sub second sensor streams sync directly over WebSockets with automatic backup polling so zero readings are lost.</div>
             </div>
 
             <div class="electric-border-card" data-color="#a855f7">
                 <div class="feat-icon">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
-                <div class="feature-card-title">Peak-Hour Energy Saver</div>
+                <div class="feature-card-title">Peak Hour Energy Saver</div>
                 <div class="feature-card-desc">Schedules heavy water pumps and heaters outside expensive peak electricity windows to cut monthly bills.</div>
             </div>
 
@@ -1552,7 +1344,7 @@
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </div>
                 <div class="feature-card-title">Predictive Hazard AI</div>
-                <div class="feature-card-desc">Spots micro-leaks, freeze risks, and loose wiring heat-ups hours before mechanical breakers trip or pipes burst.</div>
+                <div class="feature-card-desc">Spots micro leaks, freeze risks, and loose wiring heat ups hours before mechanical breakers trip or pipes burst.</div>
             </div>
 
             <div class="electric-border-card" data-color="#f43f5e">
@@ -1560,7 +1352,7 @@
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                 </div>
                 <div class="feature-card-title">Automated Web Agent</div>
-                <div class="feature-card-desc">Automatically looks up appliance wiring manuals, spare-part stock, and top-rated local repair crews online.</div>
+                <div class="feature-card-desc">Automatically looks up appliance wiring manuals, spare part stock and top rated local repair crews online.</div>
             </div>
         </div>
     </div>
@@ -1735,37 +1527,6 @@
             drawNet();
         })();
 
-        (function() {
-            const waveCanvas = document.getElementById('sineWaveCanvas');
-            if (!waveCanvas) return;
-            const wCtx = waveCanvas.getContext('2d');
-            let phase = 0;
-            function drawWave() {
-                wCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
-                wCtx.beginPath();
-                for (let x = 0; x < waveCanvas.width; x++) {
-                    const y = 26 + Math.sin((x * 0.14) + phase) * 14 * Math.sin(phase * 0.25 + x * 0.03);
-                    if (x === 0) wCtx.moveTo(x, y);
-                    else wCtx.lineTo(x, y);
-                }
-                wCtx.strokeStyle = "#c084fc";
-                wCtx.lineWidth = 2.2;
-                wCtx.stroke();
-                phase += 0.16;
-                requestAnimationFrame(drawWave);
-            }
-            drawWave();
-        })();
-
-        setInterval(() => {
-            const vEl = document.getElementById('liveVoltText');
-            const fEl = document.getElementById('liveFlowText');
-            const tEl = document.getElementById('liveTempText');
-            if (vEl) vEl.textContent = `${(229.5 + Math.random() * 1.4).toFixed(1)} V • 50 Hz`;
-            if (fEl) fEl.textContent = `${(42.1 + Math.random() * 0.7).toFixed(1)} PSI • Sealed`;
-            if (tEl) tEl.textContent = `${(23.8 + Math.random() * 0.5).toFixed(1)} °C • 45% RH`;
-        }, 2000);
-
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1809,9 +1570,9 @@
                 badge: "SYSTEM HEALTHY",
                 badgeBg: "rgba(52, 211, 153, 0.16)",
                 badgeCol: "#34d399",
-                title: "All Building Zones Normal",
-                desc: "Sensors are sampling water flow, temperature, and voltage every 100ms. Consumption matches learned daily habits.",
-                cmd: "> AI_DISPATCH: Standby | Peak-Tariff Load Shaving: ACTIVE",
+                title: "All Building Areas Normal",
+                desc: "Sensors are checking water flow, moisture and electricity every second. Everything matches normal daily usage.",
+                cmd: "> AI_STATUS: All pipes and wires safe | Off-peak energy saver active",
                 pipeCol: "#38bdf8",
                 wireCol: "#c084fc",
                 pumpCol: "#34d399",
@@ -1822,9 +1583,9 @@
                 badge: "HIDDEN LEAK FLAGGED",
                 badgeBg: "rgba(244, 63, 94, 0.2)",
                 badgeCol: "#f43f5e",
-                title: "2F Riser Pipe: 0.9 L/min Micro-Leak",
-                desc: "Pattern AI spotted continuous unscheduled water flow inside the wall cavity during quiet hours.",
-                cmd: "> TICKET #GR-204: Valve isolated + Plumber dispatched + Tenant SMS sent",
+                title: "Wall Water Pipe: Hidden Water Leak",
+                desc: "GRID noticed water continuously dripping inside the wall when no taps were turned on.",
+                cmd: "> REPAIR TICKET SENT: Plumber alerted + Resident notified via SMS",
                 pipeCol: "#f43f5e",
                 wireCol: "#c084fc",
                 pumpCol: "#34d399",
@@ -1832,12 +1593,12 @@
                 showSparks: false
             },
             spark: {
-                badge: "OVERLOAD PRECURSOR",
+                badge: "OVERHEATING WIRE RISK",
                 badgeBg: "rgba(245, 158, 11, 0.2)",
                 badgeCol: "#f59e0b",
-                title: "Main Panel: Loose Terminal Heating (56°C)",
-                desc: "Current clamp detected harmonic spikes and thermal buildup before the mechanical breaker could trip.",
-                cmd: "> TICKET #GR-211: High-draw load shed + Wiring schematic attached",
+                title: "Main Power Box: Overheating Wire",
+                desc: "Sensor clamp noticed a loose wire heating up inside the power box before a fire or short circuit could start.",
+                cmd: "> REPAIR TICKET SENT: Heavy power load reduced + Electrician alerted",
                 pipeCol: "#38bdf8",
                 wireCol: "#f59e0b",
                 pumpCol: "#34d399",
@@ -1845,12 +1606,12 @@
                 showSparks: true
             },
             pump: {
-                badge: "PUMP DRY-RUN FAULT",
+                badge: "PUMP RUNNING DRY",
                 badgeBg: "rgba(244, 63, 94, 0.2)",
                 badgeCol: "#f43f5e",
-                title: "Roof Booster Pump: High Current + Zero Flow",
-                desc: "Cross-utility AI matched a motor power surge with empty water line pressure—stopping motor burnout.",
-                cmd: "> TICKET #GR-219: Pump relay cut off + Spare seal stock verified nearby",
+                title: "Water Tank Pump: Running Without Water",
+                desc: "GRID noticed the water pump drawing heavy electricity while the pipe was empty, stopping the motor before it burned out.",
+                cmd: "> REPAIR TICKET SENT: Pump turned off safely + Spare part located nearby",
                 pipeCol: "#f59e0b",
                 wireCol: "#f43f5e",
                 pumpCol: "#f43f5e",
