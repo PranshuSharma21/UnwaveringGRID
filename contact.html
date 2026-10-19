@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRID Contact Us</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #030014;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 100px;
+        }
+
+        #bg-network-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            pointer-events: none;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(168, 85, 247, 0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 680px;
+            height: 680px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(56, 189, 248, 0.12) 45%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(85px);
+            z-index: -1;
+            animation: pulseGlow 7s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+            50% { transform: translate(-44%, -56%) scale(1.25); opacity: 0.9; }
+            100% { transform: translate(-56%, -44%) scale(1); opacity: 0.65; }
+        }
+
+        .nav-container {
+            margin-top: 28px;
+            margin-bottom: 20px;
+            z-index: 100;
+            position: sticky;
+            top: 20px;
+        }
+
+        .nav-box {
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            background: #ffffff;
+            padding: 12px 16px;
+            border-radius: 999px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #111;
+            font-size: 17px;
+            padding: 14px 28px;
+            border-radius: 999px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: 0.6s;
+            z-index: 1;
+        }
+
+        .nav-link:hover::before, .nav-link.active::before {
+            opacity: 1;
+        }
+
+        .nav-link:hover::after {
+            left: 120%;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.8), 0 0 40px rgba(168, 85, 247, 0.5);
+        }
+
+        .nav-link span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-section {
+            width: 92%;
+            max-width: 680px;
+            margin-top: 40px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact-card {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(18px);
+            border-radius: 28px;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            padding: 48px 40px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, transparent 60%);
+            animation: rotateGlow 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotateGlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .contact-title {
+            font-size: clamp(2.2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff, #c084fc, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .contact-subtitle {
+            font-size: 1.05rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 34px;
+            line-height: 1.6;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #c084fc;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 14px;
+            padding: 14px 18px;
+            color: #f8fafc;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #c084fc;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+            background: rgba(2, 6, 23, 0.95);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 130px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            color: #ffffff;
+            font-size: 1.08rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.45);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.85);
+        }
+
+        .status-message {
+            display: none;
+            margin-top: 20px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            background: rgba(52, 211, 153, 0.16);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            color: #34d399;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-network-canvas"></canvas>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="nav-container">
+        <div class="nav-box">
+            <a href="index.html" class="nav-link"><span>Home</span></a>
+            <a href="about.html" class="nav-link"><span>About Us</span></a>
+            <a href="dashboard.html" class="nav-link"><span>Dashboard</span></a>
+            <a href="contact.html" class="nav-link active"><span>Contact Us</span></a>
+            <a href="beta.html" class="nav-link"><span>Beta Version</span></a>
+        </div>
+    </div>
+
+    <div class="contact-section">
+        <div class="contact-card">
+            <h1 class="contact-title">GET IN TOUCH</h1>
+            <p class="contact-subtitle">Have questions or inquiries about project GRID? Send us a message directly.</p>
+
+            <form id="contactForm" class="contact-form">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Your Email</label>
+                    <input type="email" id="email" name="email" placeholder="grid@domain.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Your Message</label>
+                    <textarea id="message" name="message" placeholder="How can we help you?" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Send Message</button>
+            </form>
+
+            <div id="statusMsg" class="status-message">Thanks! Your entry was submitted successfully.</div>
+        </div>
+    </div>
+
+    <script>
+        const links = document.querySelectorAll(".nav-link");
+        const current = window.location.pathname.split("/").pop() || "contact.html";
+
+        links.forEach(link => {
+            if (link.getAttribute("href") === current) {
+                link.classList.add("active");
+            }
+            link.addEventListener("click", function () {
+                links.forEach(l => l.classList.remove("active"));
+                this.classList.add("active");
+            });
+        });
+
+        (function() {
+            const netCanvas = document.getElementById('bg-network-canvas');
+            if (!netCanvas) return;
+            const netCtx = netCanvas.getContext('2d');
+            let w = netCanvas.width = window.innerWidth;
+            let h = netCanvas.height = window.innerHeight;
+            const nodes = [];
+            const count = 48;
+            const mouse = { x: -9999, y: -9999 };
+
+            for (let i = 0; i < count; i++) {
+                nodes.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.65,
+                    vy: (Math.random() - 0.5) * 0.65,
+                    r: 1.5 + Math.random() * 2
+                });
+            }
+
+            window.addEventListener('resize', () => {
+                w = netCanvas.width = window.innerWidth;
+                h = netCanvas.height = window.innerHeight;
+            });
+
+            window.addEventListener('pointermove', e => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+
+            function drawNet() {
+                netCtx.clearRect(0, 0, w, h);
+                for (let i = 0; i < count; i++) {
+                    const n = nodes[i];
+                    n.x += n.vx;
+                    n.y += n.vy;
+                    if (n.x < 0 || n.x > w) n.vx *= -1;
+                    if (n.y < 0 || n.y > h) n.vy *= -1;
+
+                    netCtx.beginPath();
+                    netCtx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                    netCtx.fillStyle = "rgba(192, 132, 252, 0.55)";
+                    netCtx.fill();
+
+                    for (let j = i + 1; j < count; j++) {
+                        const m = nodes[j];
+                        const dist = Math.hypot(n.x - m.x, n.y - m.y);
+                        if (dist < 135) {
+                            netCtx.beginPath();
+                            netCtx.moveTo(n.x, n.y);
+                            netCtx.lineTo(m.x, m.y);
+                            netCtx.strokeStyle = `rgba(56, 189, 248, ${(1 - dist / 135) * 0.22})`;
+                            netCtx.lineWidth = 1;
+                            netCtx.stroke();
+                        }
+                    }
+
+                    const mDist = Math.hypot(n.x - mouse.x, n.y - mouse.y);
+                    if (mDist < 160) {
+                        netCtx.beginPath();
+                        netCtx.moveTo(n.x, n.y);
+                        netCtx.lineTo(mouse.x, mouse.y);
+                        netCtx.strokeStyle = `rgba(192, 132, 252, ${(1 - mDist / 160) * 0.45})`;
+                        netCtx.stroke();
+                    }
+                }
+                requestAnimationFrame(drawNet);
+            }
+            drawNet();
+        })();
+
+        const form = document.getElementById("contactForm");
+        const statusMsg = document.getElementById("statusMsg");
+        const submitBtn = document.getElementById("submitBtn");
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            submitBtn.innerText = "Sending...";
+            submitBtn.disabled = true;
+
+            const data = new FormData(form);
+            const response = await fetch("https://formspree.io/f/mbgrgzgo", {
+                method: "POST",
+                body: data,
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (response.ok) {
+                form.reset();
+                statusMsg.style.display = "block";
+                submitBtn.innerText = "Send Message";
+                submitBtn.disabled = false;
+            } else {
+                statusMsg.style.display = "block";
+                statusMsg.style.borderColor = "rgba(244, 63, 94, 0.4)";
+                statusMsg.style.background = "rgba(244, 63, 94, 0.15)";
+                statusMsg.style.color = "#f43f5e";
+                statusMsg.innerText = "Oops! There was a problem submitting your form.";
+                submitBtn.innerText = "Send Message";
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
