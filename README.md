@@ -56,6 +56,8 @@ grid-iot/
 ## 3. System Architecture Diagram
 
 GRID connects non-invasive sensors to 32-bit Xtensa/RISC-V microcontrollers, streaming real-time JSON payloads via persistent WebSockets and HTTP fallback polling to a dual-tier ML and Generative AI dispatcher.
+<img width="2194" height="1232" alt="image" src="https://github.com/user-attachments/assets/f64bfea7-5816-4843-9f60-94117eebf85f" />
+
 
 
 
