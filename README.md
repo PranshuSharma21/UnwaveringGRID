@@ -59,38 +59,27 @@ grid-iot/
 ## 3. System Architecture Diagram
 GRID connects non-invasive sensors to 32-bit Xtensa/RISC-V microcontrollers, streaming real-time JSON payloads via persistent WebSockets and HTTP fallback polling to a dual-tier ML and Generative AI dispatcher.
 
-flowchart LR
-    subgraph EDGE ["1. Edge Hardware Layer"]
-        S1["💧 Flow & Pressure Meter"]
-        S2["⚡ PZEM & CT Clamps"]
-        S3["🌡️ DHT22 Delhi Moisture"]
-        S4["🌀 HVAC Duct Probe"]
-        MCU["🎛️ ESP32 / ESP8266 C++"]
-        S1 & S2 & S3 & S4 --> MCU
-    end
+## 4. Setup Documentation
+GRID (Gateway for Repairs, Inventory, and Dispatch) replaces slow, reactive property maintenance with real time automated prevention. In residential complexes and commercial properties, hidden plumbing fractures, pipe freeze risks, phantom water leaks and overloaded electrical circuits are almost always discovered far too late. GRID deploys affordable non invasive edge sensors on ESP32/ESP8266 microcontrollers to continuously track building health at an 80% lower capital cost than legacy Building Management Systems (BMS).
 
-    subgraph CLOUD ["2. Cloud Backend"]
-        API["🌐 Express POST /api/telemetry"]
-        WS["⚡ Socket.io WebSockets"]
-        POLL["🔄 Fallback GET /latest"]
-        TSDB[("🗄️ 48h Ring Buffer")]
-        MCU -- "Wi-Fi JSON" --> API
-        API --> WS
-        API --> POLL
-        API --> TSDB
-    end
+The dashboard can be accessed from: https://pranshusharma21.github.io/UnwaveringGRID/
 
-    subgraph AI ["3. Predictive AI Engine"]
-        ML["📈 Rolling Baseline ML"]
-        GEN["🤖 GenAI Work-Order Dispatch"]
-        TSDB --> ML
-        ML --> GEN
-    end
+## 5. Evaluation Results & Testing Details
+WebSocket Latency: Measured at 142 ms average packet roundtrip from edge node to browser canvas.
 
-    subgraph CLIENT ["4. Operator Dashboard"]
-        DASH["🖥️ Protected Console"]
-        ALERT["📱 Instant Alerts & Tickets"]
-        WS & POLL --> DASH
-        GEN --> ALERT
-        GEN --> DASH
-    end
+Cold-Start Resilience: Verified 0% data loss during cloud cold starts using the /api/telemetry/latest 3.5s polling backup.
+
+Hardware Interoperability: Tested successfully with ESP32 NodeMCU units transmitting JSON payloads over HTTP POST.
+
+## 6. Short Demo Video Demonstrating Working Prototype
+Watch the Prototype Walkthrough: 
+
+## 7. Deployment Instructions
+Cloud Hosting (Render): Push code to GitHub, create a new Node Web Service on Render, set Build Command to npm install and Start Command to node server.js.
+
+Edge Hardware (ESP32): Flash firmware pointing to https://grid-ygrx.onrender.com/api/telemetry. The dashboard badge will instantly switch to ESP32 Hardware Stream Connected.
+
+
+
+Developed by Pranshu Sharma, Pranav Verma, and Siddharth Singh.
+
