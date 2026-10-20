@@ -13,7 +13,7 @@
 1. [Hosted & Fully Working Application](#1-hosted--fully-working-application)
 2. [GitHub Source Code Repository Structure](#2-github-source-code-repository-structure)
 3. [System Architecture Diagram](#3-system-architecture-diagram)
-4. [Complete Overview & Setup Documentation](#4-complete-overview--setup-documentation)
+4. [Setup Documentation](#4-setup-documentation)
 5. [Evaluation Results & Testing Details](#5-evaluation-results--testing-details)
 6. [Short Demo Video Demonstrating Working Prototype](#6-short-demo-video-demonstrating-working-prototype)
 7. [Deployment Instructions](#7-deployment-instructions)
