@@ -52,3 +52,45 @@ grid-iot/
 ├── server.js           # Node.js + Express + Socket.io ingestion & broadcast server
 ├── package.json        # Node dependencies and startup scripts
 └── README.md           # Complete project, architecture, API, and deployment documentation
+```
+
+
+
+## 3. System Architecture Diagram
+GRID connects non-invasive sensors to 32-bit Xtensa/RISC-V microcontrollers, streaming real-time JSON payloads via persistent WebSockets and HTTP fallback polling to a dual-tier ML and Generative AI dispatcher.
+
+flowchart LR
+    subgraph EDGE ["1. Edge Hardware Layer"]
+        S1["💧 Flow & Pressure Meter"]
+        S2["⚡ PZEM & CT Clamps"]
+        S3["🌡️ DHT22 Delhi Moisture"]
+        S4["🌀 HVAC Duct Probe"]
+        MCU["🎛️ ESP32 / ESP8266 C++"]
+        S1 & S2 & S3 & S4 --> MCU
+    end
+
+    subgraph CLOUD ["2. Cloud Backend"]
+        API["🌐 Express POST /api/telemetry"]
+        WS["⚡ Socket.io WebSockets"]
+        POLL["🔄 Fallback GET /latest"]
+        TSDB[("🗄️ 48h Ring Buffer")]
+        MCU -- "Wi-Fi JSON" --> API
+        API --> WS
+        API --> POLL
+        API --> TSDB
+    end
+
+    subgraph AI ["3. Predictive AI Engine"]
+        ML["📈 Rolling Baseline ML"]
+        GEN["🤖 GenAI Work-Order Dispatch"]
+        TSDB --> ML
+        ML --> GEN
+    end
+
+    subgraph CLIENT ["4. Operator Dashboard"]
+        DASH["🖥️ Protected Console"]
+        ALERT["📱 Instant Alerts & Tickets"]
+        WS & POLL --> DASH
+        GEN --> ALERT
+        GEN --> DASH
+    end
