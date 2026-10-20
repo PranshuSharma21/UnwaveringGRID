@@ -102,6 +102,6 @@ Edge Hardware (ESP32): Flash firmware pointing to https://grid-ygrx.onrender.com
 
 
 
-
+# 8. Core Team
 Developed by Pranshu Sharma, Pranav Verma, and Siddharth Singh. 
 
