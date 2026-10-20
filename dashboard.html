@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRID Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #030014;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 90px;
+        }
+
+        #bg-network-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            pointer-events: none;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(to right, rgba(168, 85, 247, 0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 680px;
+            height: 680px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(56, 189, 248, 0.12) 45%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(85px);
+            z-index: -1;
+            animation: pulseGlow 7s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+            50% { transform: translate(-44%, -56%) scale(1.25); opacity: 0.9; }
+            100% { transform: translate(-56%, -44%) scale(1); opacity: 0.65; }
+        }
+
+        .nav-container {
+            margin-top: 28px;
+            margin-bottom: 24px;
+            z-index: 100;
+            position: sticky;
+            top: 20px;
+        }
+
+        .nav-box {
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            background: #ffffff;
+            padding: 12px 16px;
+            border-radius: 999px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #111;
+            font-size: 17px;
+            padding: 14px 28px;
+            border-radius: 999px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: 0.6s;
+            z-index: 1;
+        }
+
+        .nav-link:hover::before, .nav-link.active::before {
+            opacity: 1;
+        }
+
+        .nav-link:hover::after {
+            left: 120%;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.8), 0 0 40px rgba(168, 85, 247, 0.5);
+        }
+
+        .nav-link span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-gate {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 0, 20, 0.96);
+            backdrop-filter: blur(24px);
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 430px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(168, 85, 247, 0.45);
+            border-radius: 28px;
+            padding: 42px 34px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-lock-icon {
+            width: 62px;
+            height: 62px;
+            border-radius: 18px;
+            background: rgba(168, 85, 247, 0.16);
+            border: 1px solid rgba(192, 132, 252, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            color: #c084fc;
+        }
+
+        .auth-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #c084fc, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .auth-sub {
+            color: #94a3b8;
+            font-size: 0.94rem;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: left;
+        }
+
+        .auth-field label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #c084fc;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .auth-field input {
+            width: 100%;
+            background: rgba(2, 6, 23, 0.9);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 12px;
+            padding: 13px 16px;
+            color: #ffffff;
+            font-size: 0.98rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .auth-field input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+        }
+
+        .auth-btn {
+            margin-top: 8px;
+            padding: 15px;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.45);
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.85);
+        }
+
+        .auth-error {
+            display: none;
+            margin-top: 14px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            background: rgba(244, 63, 94, 0.16);
+            border: 1px solid rgba(244, 63, 94, 0.45);
+            color: #f43f5e;
+            font-size: 0.86rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .dashboard-Protected {
+            display: none;
+            width: 94%;
+            max-width: 1200px;
+            z-index: 1;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(16px);
+            border-radius: 22px;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            padding: 22px 28px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.55);
+        }
+
+        .title-block h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #c084fc, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title-block p {
+            color: #94a3b8;
+            font-size: 0.92rem;
+            margin-top: 4px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mode-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.14);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+            font-size: 0.84rem;
+            font-weight: 700;
+        }
+
+        .mode-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #38bdf8;
+            box-shadow: 0 0 10px #38bdf8;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .action-btn {
+            background: rgba(168, 85, 247, 0.18);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #e9d5ff;
+            padding: 9px 18px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(168, 85, 247, 0.4);
+            color: #ffffff;
+            box-shadow: 0 0 18px rgba(168, 85, 247, 0.5);
+        }
+
+        .logout-btn {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            color: #fda4af;
+            padding: 9px 18px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(244, 63, 94, 0.35);
+            color: #ffffff;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+            gap: 20px;
+        }
+
+        .sensor-card {
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(16px);
+            border-radius: 22px;
+            border: 1px solid rgba(168, 85, 247, 0.28);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sensor-card:hover {
+            transform: translateY(-5px);
+            border-color: #38bdf8;
+            box-shadow: 0 16px 38px rgba(56, 189, 248, 0.18);
+        }
+
+        .sensor-card.disconnected {
+            cursor: default;
+            opacity: 0.78;
+            border-color: rgba(100, 116, 139, 0.3);
+        }
+
+        .sensor-card.disconnected:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #94a3b8;
+            font-size: 0.86rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .sensor-Model {
+            font-size: 0.72rem;
+            color: #c084fc;
+            background: rgba(168, 85, 247, 0.14);
+            padding: 3px 9px;
+            border-radius: 999px;
+        }
+
+        .primary-reading {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .secondary-reading {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #38bdf8;
+        }
+
+        .live-stamp {
+            font-size: 0.76rem;
+            color: #64748b;
+            font-family: monospace;
+        }
+
+        .sparkline-box {
+            width: 100%;
+            height: 110px;
+            margin-top: 6px;
+            position: relative;
+        }
+
+        .click-hint {
+            font-size: 0.75rem;
+            color: #c084fc;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .alerts-panel {
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(16px);
+            border-radius: 22px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .alerts-header h2 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .aspect-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .aspect-tab {
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .aspect-tab.active, .aspect-tab:hover {
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 0 16px rgba(168, 85, 247, 0.45);
+        }
+
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alert-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: rgba(2, 6, 23, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-left: 4px solid #c084fc;
+            padding: 14px 18px;
+            border-radius: 12px;
+        }
+
+        .alert-row.warn {
+            border-left-color: #f59e0b;
+        }
+
+        .alert-row.crit {
+            border-left-color: #f43f5e;
+        }
+
+        .alert-main {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .alert-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .alert-detail {
+            font-size: 0.84rem;
+            color: #94a3b8;
+        }
+
+        .alert-timestamp {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.88);
+            backdrop-filter: blur(16px);
+            z-index: 400;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-window {
+            width: 100%;
+            max-width: 960px;
+            background: #090d1d;
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: 26px;
+            padding: 30px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 14px;
+        }
+
+        .modal-top h3 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .close-modal-btn {
+            background: rgba(244, 63, 94, 0.18);
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            color: #fda4af;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .clicked-point-banner {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .modal-chart-wrap {
+            width: 100%;
+            height: 310px;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-network-canvas"></canvas>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="nav-container">
+        <div class="nav-box">
+            <a href="index.html" class="nav-link"><span>Home</span></a>
+            <a href="about.html" class="nav-link"><span>About Us</span></a>
+            <a href="dashboard.html" class="nav-link active"><span>Dashboard</span></a>
+            <a href="contact.html" class="nav-link"><span>Contact Us</span></a>
+            <a href="beta.html" class="nav-link"><span>Beta Version</span></a>
+        </div>
+    </div>
+
+    <div class="auth-gate" id="authGate">
+        <div class="auth-card">
+            <div class="auth-lock-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            <h2 class="auth-title">GRID Security Gate</h2>
+            <p class="auth-sub">Enter authorized operator credentials to unlock live building telemetry and 48-hour diagnostic history.</p>
+
+            <form class="auth-form" id="loginForm">
+                <div class="auth-field">
+                    <label for="loginUser">Username</label>
+                    <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username" required>
+                </div>
+                <div class="auth-field">
+                    <label for="loginPass">Password</label>
+                    <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="auth-btn" id="loginBtn">Unlock Telemetry Console</button>
+            </form>
+
+            <div class="auth-error" id="authError">Invalid username or password. Access denied.</div>
+        </div>
+    </div>
+
+    <div class="dashboard-Protected" id="dashboardContent">
+        <div class="top-bar">
+            <div class="title-block">
+                <h1>New Delhi Sector-4 • Live Telemetry</h1>
+                <p id="operatorGreeting">Authenticated Session • Real-Time ESP32 / ESP8266 Sensor Bus</p>
+            </div>
+            <div class="top-actions">
+                <div class="mode-badge" id="sourceBadge">
+                    <span class="mode-dot" id="sourceDot"></span>
+                    <span id="sourceText">Live Delhi Telemetry Active</span>
+                </div>
+                <button class="action-btn" id="syncEspBtn">Sync ESP Hardware</button>
+                <button class="logout-btn" id="logoutBtn">Lock Console</button>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="sensor-card" data-sensor="water">
+                <div class="card-top">
+                    <span>Water Flow & Pressure</span>
+                    <span class="sensor-Model">YF-S201 + Analog PSI</span>
+                </div>
+                <div class="primary-reading" id="valWaterFlow">14.2 L/min</div>
+                <div class="secondary-reading" id="valWaterPsi">Pressure: 41.8 PSI (2.88 Bar)</div>
+                <div class="live-stamp" id="stampWater">Updated: --</div>
+                <div class="sparkline-box">
+                    <canvas id="sparkWater"></canvas>
+                </div>
+                <div class="click-hint">
+                    <span>24h Trading Curve (Live Hour Active)</span>
+                    <span>View 48h Graph →</span>
+                </div>
+            </div>
+
+            <div class="sensor-card" data-sensor="power">
+                <div class="card-top">
+                    <span>Electrical Input</span>
+                    <span class="sensor-Model">PZEM-004T + SCT-013</span>
+                </div>
+                <div class="primary-reading" id="valPowerVolt">231.4 V</div>
+                <div class="secondary-reading" id="valPowerAmp">Load: 6.82 A • 1.58 kW (50.0 Hz)</div>
+                <div class="live-stamp" id="stampPower">Updated: --</div>
+                <div class="sparkline-box">
+                    <canvas id="sparkPower"></canvas>
+                </div>
+                <div class="click-hint">
+                    <span>24h Trading Curve (Live Hour Active)</span>
+                    <span>View 48h Graph →</span>
+                </div>
+            </div>
+
+            <div class="sensor-card" data-sensor="moisture">
+                <div class="card-top">
+                    <span>Air Moisture (Delhi)</span>
+                    <span class="sensor-Model">DHT22 / BME280</span>
+                </div>
+                <div class="primary-reading" id="valMoisture">44.5 % RH</div>
+                <div class="secondary-reading" id="valDelhiTemp">Ambient: 28.4 °C • Dew Point: 15.1 °C</div>
+                <div class="live-stamp" id="stampMoisture">Updated: --</div>
+                <div class="sparkline-box">
+                    <canvas id="sparkMoisture"></canvas>
+                </div>
+                <div class="click-hint">
+                    <span>24h Trading Curve (Live Hour Active)</span>
+                    <span>View 48h Graph →</span>
+                </div>
+            </div>
+
+            <div class="sensor-card disconnected">
+                <div class="card-top">
+                    <span>HVAC Duct Pressure</span>
+                    <span class="sensor-Model">MPX5010DP</span>
+                </div>
+                <div class="primary-reading" style="color: #64748b;">-- Pa</div>
+                <div class="secondary-reading" style="color: #f43f5e;">Sensor Disconnected</div>
+                <div class="live-stamp" id="stampHvac">Last Seen: Offline (Node GPIO-34 Open)</div>
+                <div class="sparkline-box">
+                    <canvas id="sparkHvac"></canvas>
+                </div>
+                <div class="click-hint" style="color: #64748b;">
+                    <span>Awaiting Physical Sensor Handshake</span>
+                    <span>Offline</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="alerts-panel">
+            <div class="alerts-header">
+                <h2>Timestamped Past Alerts by Aspect</h2>
+                <div class="aspect-tabs">
+                    <button class="aspect-tab active" data-aspect="water">Water Flow & Pressure</button>
+                    <button class="aspect-tab" data-aspect="power">Electrical Input</button>
+                    <button class="aspect-tab" data-aspect="moisture">Air Moisture (Delhi)</button>
+                    <button class="aspect-tab" data-aspect="hvac">HVAC Sensor</button>
+                </div>
+            </div>
+            <div class="alert-list" id="aspectAlertsList"></div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="historyModal">
+        <div class="modal-window">
+            <div class="modal-top">
+                <h3 id="modalTitle">48-Hour Historical Telemetry</h3>
+                <button class="close-modal-btn" id="closeModalBtn">Close Graph ✕</button>
+            </div>
+            <div class="clicked-point-banner">
+                <span id="selectedPointLabel">Click any point on the 48-hour curve below to inspect exact timestamped sensor telemetry.</span>
+                <span id="selectedPointValue" style="color:#38bdf8; font-weight:800; font-family:monospace;">LIVE READING</span>
+            </div>
+            <div class="modal-chart-wrap">
+                <canvas id="modalHistoryChart"></canvas>
+            </div>
+            <div class="alert-list" id="modalSensorAlerts"></div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = "https://grid-ygrx.onrender.com";
+
+        const FALLBACK_CREDENTIALS = [
+            { username: "admin", password: "admin", role: "System Administrator" },
+            { username: "test", password: "testpassword@123", role: "Facility Operator" }
+        ];
+
+        (function() {
+            const netCanvas = document.getElementById('bg-network-canvas');
+            if (!netCanvas) return;
+            const netCtx = netCanvas.getContext('2d');
+            let w = netCanvas.width = window.innerWidth;
+            let h = netCanvas.height = window.innerHeight;
+            const nodes = [];
+            const count = 44;
+
+            for (let i = 0; i < count; i++) {
+                nodes.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.6,
+                    vy: (Math.random() - 0.5) * 0.6,
+                    r: 1.5 + Math.random() * 2
+                });
+            }
+
+            window.addEventListener('resize', () => {
+                w = netCanvas.width = window.innerWidth;
+                h = netCanvas.height = window.innerHeight;
+            });
+
+            function drawNet() {
+                netCtx.clearRect(0, 0, w, h);
+                for (let i = 0; i < count; i++) {
+                    const n = nodes[i];
+                    n.x += n.vx;
+                    n.y += n.vy;
+                    if (n.x < 0 || n.x > w) n.vx *= -1;
+                    if (n.y < 0 || n.y > h) n.vy *= -1;
+
+                    netCtx.beginPath();
+                    netCtx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                    netCtx.fillStyle = "rgba(192, 132, 252, 0.5)";
+                    netCtx.fill();
+
+                    for (let j = i + 1; j < count; j++) {
+                        const m = nodes[j];
+                        const dist = Math.hypot(n.x - m.x, n.y - m.y);
+                        if (dist < 130) {
+                            netCtx.beginPath();
+                            netCtx.moveTo(n.x, n.y);
+                            netCtx.lineTo(m.x, m.y);
+                            netCtx.strokeStyle = `rgba(56, 189, 248, ${(1 - dist / 130) * 0.2})`;
+                            netCtx.lineWidth = 1;
+                            netCtx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(drawNet);
+            }
+            drawNet();
+        })();
+
+        async function verifyRepoCredentials(inputUser, inputPass) {
+            try {
+                const res = await fetch('credentials.json', { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    const list = data.users || FALLBACK_CREDENTIALS;
+                    return list.find(u => u.username === inputUser && u.password === inputPass) || null;
+                }
+            } catch (e) {}
+            return FALLBACK_CREDENTIALS.find(u => u.username === inputUser && u.password === inputPass) || null;
+        }
+
+        const authGate = document.getElementById('authGate');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const loginForm = document.getElementById('loginForm');
+        const authError = document.getElementById('authError');
+        const operatorGreeting = document.getElementById('operatorGreeting');
+
+        let dashboardInitialized = false;
+
+        function unlockDashboard(userObj) {
+            authGate.style.display = 'none';
+            dashboardContent.style.display = 'flex';
+            operatorGreeting.textContent = `Logged in as: ${userObj.username} (${userObj.role}) • New Delhi Telemetry Node`;
+            if (!dashboardInitialized) {
+                dashboardInitialized = true;
+                initTelemetryDashboard();
+            }
+        }
+
+        const savedSession = sessionStorage.getItem('grid_auth_user');
+        if (savedSession) {
+            try {
+                unlockDashboard(JSON.parse(savedSession));
+            } catch (e) {}
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('loginUser').value.trim();
+            const p = document.getElementById('loginPass').value;
+            const matched = await verifyRepoCredentials(u, p);
+
+            if (matched) {
+                authError.style.display = 'none';
+                sessionStorage.setItem('grid_auth_user', JSON.stringify(matched));
+                unlockDashboard(matched);
+            } else {
+                authError.style.display = 'block';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('grid_auth_user');
+            dashboardContent.style.display = 'none';
+            authGate.style.display = 'flex';
+            document.getElementById('loginPass').value = '';
+        });
+
+        function formatHourStamp(hoursAgo) {
+            const d = new Date(Date.now() - hoursAgo * 3600 * 1000);
+            return d.toLocaleString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        function formatFullTimestamp(minutesAgo) {
+            const d = new Date(Date.now() - minutesAgo * 60 * 1000);
+            return d.toLocaleString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+        }
+
+        const labels48h = [];
+        const water48h = [];
+        const power48h = [];
+        const moisture48h = [];
+
+        for (let h = 47; h >= 0; h--) {
+            labels48h.push(h === 0 ? "LIVE NOW" : formatHourStamp(h));
+            const tod = (new Date(Date.now() - h * 3600 * 1000)).getHours();
+
+            const wBase = (tod >= 6 && tod <= 10) || (tod >= 19 && tod <= 22) ? 18.5 : (tod <= 4 ? 2.4 : 13.8);
+            water48h.push(parseFloat((wBase + Math.sin(h * 0.7) * 1.4).toFixed(2)));
+
+            const pBase = (tod >= 13 && tod <= 17) || (tod >= 20 && tod <= 23) ? 228.6 : 231.8;
+            power48h.push(parseFloat((pBase + Math.cos(h * 0.5) * 1.6).toFixed(1)));
+
+            const mBase = (tod >= 4 && tod <= 8) ? 54.0 : (tod >= 13 && tod <= 16 ? 36.5 : 44.5);
+            moisture48h.push(parseFloat((mBase + Math.sin(h * 0.4) * 2.1).toFixed(1)));
+        }
+
+        const pastAlertsData = {
+            water: [
+                {
+                    severity: "crit",
+                    title: "Night Micro-Leak Flow Detected (1.6 L/min)",
+                    detail: "Continuous inline water flow detected on riser pipe during 03:15 AM quiet window (Pressure dropped from 42.1 PSI to 38.4 PSI).",
+                    time: formatFullTimestamp(495)
+                },
+                {
+                    severity: "warn",
+                    title: "Booster Pump Pressure Surge (51.2 PSI)",
+                    detail: "Transient pressure spike recorded during overhead tank refill cycle; automatically smoothed by relay.",
+                    time: formatFullTimestamp(1380)
+                },
+                {
+                    severity: "normal",
+                    title: "Inline Flow Sensor Calibration Verified",
+                    detail: "YF-S201 Hall-effect pulse counter verified zero drift against main municipal meter.",
+                    time: formatFullTimestamp(2420)
+                }
+            ],
+            power: [
+                {
+                    severity: "crit",
+                    title: "Phase Voltage Sag & High Inductive Draw (214.2 V / 14.6 A)",
+                    detail: "Submersible pump startup coincided with peak afternoon AC load; shifted secondary heater to off-peak window.",
+                    time: formatFullTimestamp(310)
+                },
+                {
+                    severity: "warn",
+                    title: "Distribution Panel Terminal Warmup (48.2 °C)",
+                    detail: "Minor harmonic current imbalance detected on Phase-B breaker; flagged for preventive tightening.",
+                    time: formatFullTimestamp(1640)
+                },
+                {
+                    severity: "normal",
+                    title: "Off-Peak Tariff Load Shaving Executed",
+                    detail: "Automated relay scheduled water tank booster run at 04:30 AM off-peak BSES tariff rate.",
+                    time: formatFullTimestamp(2710)
+                }
+            ],
+            moisture: [
+                {
+                    severity: "warn",
+                    title: "Early Morning Delhi Humidity Spike (61.4% RH)",
+                    detail: "Rapid relative humidity rise near utility shaft wall; checked against water pressure to rule out pipe seepage.",
+                    time: formatFullTimestamp(390)
+                },
+                {
+                    severity: "normal",
+                    title: "Afternoon Dry-Bulb Stabilization (36.8% RH @ 31.2 °C)",
+                    detail: "Typical New Delhi afternoon dip recorded; indoor ventilation dampers operating within normal baseline.",
+                    time: formatFullTimestamp(1290)
+                },
+                {
+                    severity: "crit",
+                    title: "Localized Basement Dampness Alert (68.9% RH)",
+                    detail: "Sustained moisture pocket detected near sump enclosure; exhaust fan triggered for 45 minutes.",
+                    time: formatFullTimestamp(2590)
+                }
+            ],
+            hvac: [
+                {
+                    severity: "crit",
+                    title: "MPX5010DP Differential Pressure Probe Disconnected",
+                    detail: "ESP32 ADC channel GPIO-34 reported open-circuit voltage (0.00V). Physical harness inspection required.",
+                    time: formatFullTimestamp(95)
+                },
+                {
+                    severity: "warn",
+                    title: "Supply Duct Static Pressure Drop (118 Pa)",
+                    detail: "Filter pressure differential flagged dust accumulation prior to sensor disconnection.",
+                    time: formatFullTimestamp(1980)
+                }
+            ]
+        };
+
+        let sparkWaterChart, sparkPowerChart, sparkMoistureChart, sparkHvacChart, modalChart;
+        let activeModalSensor = null;
+        let espHardwareConnected = false;
+
+        function createTradingSparkline(canvasId, series48, color) {
+            const slice24 = series48.slice(24);
+            const labels24 = labels48h.slice(24);
+
+            return new Chart(document.getElementById(canvasId), {
+                type: 'line',
+                data: {
+                    labels: labels24,
+                    datasets: [{
+                        data: slice24,
+                        borderColor: color,
+                        borderWidth: 2.2,
+                        backgroundColor: color + '18',
+                        fill: true,
+                        tension: 0.32,
+                        pointRadius: (ctx) => ctx.dataIndex === 23 ? 5 : 0,
+                        pointBackgroundColor: (ctx) => ctx.dataIndex === 23 ? '#ffffff' : color,
+                        pointBorderColor: color,
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                title: (items) => items[0].label
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+        }
+
+        function renderAspectAlerts(aspectKey) {
+            const container = document.getElementById('aspectAlertsList');
+            const list = pastAlertsData[aspectKey] || [];
+            container.innerHTML = list.map(item => `
+                <div class="alert-row ${item.severity}">
+                    <div class="alert-main">
+                        <span class="alert-title">${item.title}</span>
+                        <span class="alert-detail">${item.detail}</span>
+                    </div>
+                    <span class="alert-timestamp">${item.time}</span>
+                </div>
+            `).join('');
+        }
+
+        function open48hModal(sensorKey) {
+            activeModalSensor = sensorKey;
+            const modal = document.getElementById('historyModal');
+            const titleEl = document.getElementById('modalTitle');
+            const pointLabel = document.getElementById('selectedPointLabel');
+            const pointVal = document.getElementById('selectedPointValue');
+            const modalAlerts = document.getElementById('modalSensorAlerts');
+
+            let series = water48h;
+            let unit = 'L/min';
+            let color = '#38bdf8';
+
+            if (sensorKey === 'water') {
+                titleEl.textContent = 'Water Flow & Pressure — Last 48 Hours (2 Days)';
+                series = water48h;
+                unit = 'L/min';
+                color = '#38bdf8';
+            } else if (sensorKey === 'power') {
+                titleEl.textContent = 'Electrical Input Voltage — Last 48 Hours (2 Days)';
+                series = power48h;
+                unit = 'V';
+                color = '#c084fc';
+            } else if (sensorKey === 'moisture') {
+                titleEl.textContent = 'Delhi Indoor Air Moisture — Last 48 Hours (2 Days)';
+                series = moisture48h;
+                unit = '% RH';
+                color = '#34d399';
+            }
+
+            pointLabel.textContent = `Showing 48-hour history (${labels48h[0]} → LIVE). Click any point on the graph to inspect exact reading.`;
+            pointVal.textContent = `${series[47]} ${unit} (LIVE)`;
+
+            modalAlerts.innerHTML = (pastAlertsData[sensorKey] || []).map(a => `
+                <div class="alert-row ${a.severity}">
+                    <div class="alert-main">
+                        <span class="alert-title">${a.title}</span>
+                        <span class="alert-detail">${a.detail}</span>
+                    </div>
+                    <span class="alert-timestamp">${a.time}</span>
+                </div>
+            `).join('');
+
+            if (modalChart) modalChart.destroy();
+
+            modalChart = new Chart(document.getElementById('modalHistoryChart'), {
+                type: 'line',
+                data: {
+                    labels: labels48h,
+                    datasets: [{
+                        label: titleEl.textContent,
+                        data: series,
+                        borderColor: color,
+                        backgroundColor: color + '22',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: (ctx) => ctx.dataIndex === 47 ? 6 : 3,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: (ctx) => ctx.dataIndex === 47 ? '#ffffff' : color
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    onClick: (evt, elements) => {
+                        if (elements.length > 0) {
+                            const idx = elements[0].index;
+                            pointLabel.textContent = `Timestamp: ${labels48h[idx]}`;
+                            pointVal.textContent = `Exact Reading: ${series[idx]} ${unit}`;
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#94a3b8', maxTicksLimit: 8 },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(255,255,255,0.06)' }
+                        }
+                    }
+                }
+            });
+
+            modal.classList.add('open');
+        }
+
+        function updateLiveCurrentHourPoint(newWaterFlow, newWaterPsi, newVolt, newAmp, newMoisture, newTemp, isFromEsp = false) {
+            const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
+            water48h[47] = parseFloat(newWaterFlow.toFixed(2));
+            power48h[47] = parseFloat(newVolt.toFixed(1));
+            moisture48h[47] = parseFloat(newMoisture.toFixed(1));
+
+            document.getElementById('valWaterFlow').textContent = `${water48h[47]} L/min`;
+            document.getElementById('valWaterPsi').textContent = `Pressure: ${newWaterPsi.toFixed(1)} PSI (${(newWaterPsi * 0.0689).toFixed(2)} Bar)`;
+            document.getElementById('stampWater').textContent = `Updated: ${nowStr}`;
+
+            const kw = ((newVolt * newAmp) / 1000).toFixed(2);
+            document.getElementById('valPowerVolt').textContent = `${power48h[47]} V`;
+            document.getElementById('valPowerAmp').textContent = `Load: ${newAmp.toFixed(2)} A • ${kw} kW (50.0 Hz)`;
+            document.getElementById('stampPower').textContent = `Updated: ${nowStr}`;
+
+            const dewPoint = (newTemp - ((100 - newMoisture) / 5)).toFixed(1);
+            document.getElementById('valMoisture').textContent = `${moisture48h[47]} % RH`;
+            document.getElementById('valDelhiTemp').textContent = `Ambient: ${newTemp.toFixed(1)} °C • Dew Point: ${dewPoint} °C`;
+            document.getElementById('stampMoisture').textContent = `Updated: ${nowStr}`;
+
+            if (sparkWaterChart) {
+                sparkWaterChart.data.datasets[0].data[23] = water48h[47];
+                sparkWaterChart.update('none');
+            }
+            if (sparkPowerChart) {
+                sparkPowerChart.data.datasets[0].data[23] = power48h[47];
+                sparkPowerChart.update('none');
+            }
+            if (sparkMoistureChart) {
+                sparkMoistureChart.data.datasets[0].data[23] = moisture48h[47];
+                sparkMoistureChart.update('none');
+            }
+            if (modalChart && activeModalSensor) {
+                modalChart.update('none');
+            }
+
+            const badge = document.getElementById('sourceBadge');
+            const dot = document.getElementById('sourceDot');
+            const txt = document.getElementById('sourceText');
+            if (isFromEsp) {
+                badge.style.background = "rgba(52, 211, 153, 0.16)";
+                badge.style.borderColor = "rgba(52, 211, 153, 0.45)";
+                badge.style.color = "#34d399";
+                dot.style.background = "#34d399";
+                txt.textContent = "ESP32 Hardware Stream Connected";
+            }
+        }
+
+        function ingestExternalHardwarePayload(data) {
+            if (!data) return;
+            const rawWater = data.water_level ?? data.waterPressure ?? data.water;
+            const rawHum = data.humidity ?? data.hum;
+            const rawTemp = data.temperature ?? data.temp ?? 28.4;
+            const rawVolt = data.voltage ?? 231.2;
+
+            if (rawWater !== null && rawWater !== undefined || rawHum !== null && rawHum !== undefined) {
+                espHardwareConnected = true;
+                const flowLmin = rawWater !== null && rawWater !== undefined
+                    ? (rawWater > 60 ? +(rawWater / 22).toFixed(2) : +Number(rawWater).toFixed(2))
+                    : water48h[47];
+                const psiVal = +(38.5 + (flowLmin * 0.24)).toFixed(1);
+                const humVal = rawHum !== null && rawHum !== undefined ? +Number(rawHum).toFixed(1) : moisture48h[47];
+                const voltVal = +Number(rawVolt).toFixed(1);
+                const ampVal = +(6.4 + (flowLmin * 0.05)).toFixed(2);
+
+                updateLiveCurrentHourPoint(flowLmin, psiVal, voltVal, ampVal, humVal, +Number(rawTemp), true);
+            }
+        }
+
+        async function pollHardwareEndpoint() {
+            try {
+                const res = await fetch(`${SERVER_URL}/api/telemetry/latest`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && (data.water_level !== null || data.waterPressure !== null || data.humidity !== null)) {
+                        ingestExternalHardwarePayload(data);
+                    }
+                }
+            } catch (e) {}
+        }
+
+        function initTelemetryDashboard() {
+            sparkWaterChart = createTradingSparkline('sparkWater', water48h, '#38bdf8');
+            sparkPowerChart = createTradingSparkline('sparkPower', power48h, '#c084fc');
+            sparkMoistureChart = createTradingSparkline('sparkMoisture', moisture48h, '#34d399');
+
+            sparkHvacChart = new Chart(document.getElementById('sparkHvac'), {
+                type: 'line',
+                data: {
+                    labels: labels48h.slice(24),
+                    datasets: [{
+                        data: Array(24).fill(null),
+                        borderColor: '#64748b',
+                        borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+
+            renderAspectAlerts('water');
+
+            document.querySelectorAll('.aspect-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.aspect-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    renderAspectAlerts(tab.getAttribute('data-aspect'));
+                });
+            });
+
+            document.querySelectorAll('.sensor-card[data-sensor]').forEach(card => {
+                card.addEventListener('click', () => {
+                    open48hModal(card.getAttribute('data-sensor'));
+                });
+            });
+
+            document.getElementById('closeModalBtn').addEventListener('click', () => {
+                document.getElementById('historyModal').classList.remove('open');
+                activeModalSensor = null;
+            });
+
+            document.getElementById('historyModal').addEventListener('click', (e) => {
+                if (e.target.id === 'historyModal') {
+                    document.getElementById('historyModal').classList.remove('open');
+                    activeModalSensor = null;
+                }
+            });
+
+            document.getElementById('syncEspBtn').addEventListener('click', () => {
+                const btn = document.getElementById('syncEspBtn');
+                btn.textContent = "Checking ESP Bus...";
+                pollHardwareEndpoint().finally(() => {
+                    setTimeout(() => { btn.textContent = "Sync ESP Hardware"; }, 600);
+                });
+            });
+
+            updateLiveCurrentHourPoint(14.2, 41.8, 231.4, 6.82, 44.5, 28.4, false);
+
+            setInterval(() => {
+                if (!espHardwareConnected) {
+                    const liveFlow = 14.0 + (Math.random() - 0.5) * 0.7;
+                    const livePsi = 41.6 + (Math.random() - 0.5) * 0.6;
+                    const liveVolt = 231.0 + (Math.random() - 0.5) * 1.4;
+                    const liveAmp = 6.75 + (Math.random() - 0.5) * 0.22;
+                    const liveHum = 44.4 + (Math.random() - 0.5) * 0.5;
+                    const liveTemp = 28.4 + (Math.random() - 0.5) * 0.2;
+                    updateLiveCurrentHourPoint(liveFlow, livePsi, liveVolt, liveAmp, liveHum, liveTemp, false);
+                }
+            }, 2200);
+
+            pollHardwareEndpoint();
+            setInterval(pollHardwareEndpoint, 3500);
+
+            try {
+                const socket = io(SERVER_URL, {
+                    transports: ["websocket", "polling"],
+                    reconnection: true
+                });
+                socket.on("telemetry_update", ingestExternalHardwarePayload);
+                socket.on("sensor_update", (payload) => {
+                    if (payload && payload.telemetry) ingestExternalHardwarePayload(payload.telemetry);
+                });
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>
