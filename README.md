@@ -50,3 +50,58 @@ grid-iot/
 ├── server.js           # Node.js + Express + Socket.io ingestion & broadcast server
 ├── package.json        # Node dependencies and startup scripts
 └── README.md           # Complete project, architecture, API, and deployment documentation
+
+```
+
+## 3. System Architecture Diagram
+
+GRID connects non-invasive sensors to 32-bit Xtensa/RISC-V microcontrollers, streaming real-time JSON payloads via persistent WebSockets and HTTP fallback polling to a dual-tier ML and Generative AI dispatcher.
+
+
+
+## 4. Setup Documentation
+
+GRID (Gateway for Repairs, Inventory, and Dispatch) replaces slow, reactive property maintenance with real time automated prevention. In residential complexes and commercial properties, hidden plumbing fractures, pipe freeze risks, phantom water leaks and overloaded electrical circuits are almost always discovered far too late. GRID deploys affordable non invasive edge sensors on ESP32/ESP8266 microcontrollers to continuously track building health at an 80% lower capital cost than legacy Building Management Systems (BMS).
+
+
+
+The dashboard can be accessed from: https://pranshusharma21.github.io/UnwaveringGRID/
+
+
+
+## 5. Evaluation Results & Testing Details
+
+WebSocket Latency: Measured at 142 ms average packet roundtrip from edge node to browser canvas.
+
+
+
+Cold-Start Resilience: Verified 0% data loss during cloud cold starts using the /api/telemetry/latest 3.5s polling backup.
+
+
+
+Hardware Interoperability: Tested successfully with ESP32 NodeMCU units transmitting JSON payloads over HTTP POST.
+
+
+
+## 6. Short Demo Video Demonstrating Working Prototype
+
+Watch the Prototype Walkthrough: 
+
+
+
+## 7. Deployment Instructions
+
+Cloud Hosting (Render): Push code to GitHub, create a new Node Web Service on Render, set Build Command to npm install and Start Command to node server.js.
+
+
+
+Edge Hardware (ESP32): Flash firmware pointing to https://grid-ygrx.onrender.com/api/telemetry. The dashboard badge will instantly switch to ESP32 Hardware Stream Connected.
+
+
+
+
+
+
+
+Developed by Pranshu Sharma, Pranav Verma, and Siddharth Singh. 
+
